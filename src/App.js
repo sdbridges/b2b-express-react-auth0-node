@@ -1,25 +1,47 @@
-import logo from './logo.svg';
-import './App.css';
+import { useAuth0 } from "@auth0/auth0-react";
+import React from "react";
+import { Route, Routes } from "react-router-dom";
+import { PageLoader } from "./components/page-loader";
+import { AuthenticationGuard } from "./components/authentication-guard";
+import { AdminPage } from "./pages/admin-page";
+import { CallbackPage } from "./pages/callback-page";
+import { HomePage } from "./pages/home-page";
+import { NotFoundPage } from "./pages/not-found-page";
+import { ProfilePage } from "./pages/profile-page";
+import { ProtectedPage } from "./pages/protected-page";
+import { PublicPage } from "./pages/public-page";
+import { Test } from "./pages/test";
 
-function App() {
+export const App = () => {
+  const { isLoading } = useAuth0();
+
+  if (isLoading) {
+    return (
+      <div className="page-layout">
+        <PageLoader />
+      </div>
+    );
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route
+        path="/profile"
+        element={<AuthenticationGuard component={ProfilePage} />}
+      />
+      <Route path="/public" element={<PublicPage />} />
+      <Route
+        path="/protected"
+        element={<AuthenticationGuard component={ProtectedPage} />}
+      />
+      <Route
+        path="/admin"
+        element={<AuthenticationGuard component={AdminPage} />}
+      />
+      <Route path="/test" element={<Test />} />
+      <Route path="/callback" element={<CallbackPage />} />
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
   );
-}
-
-export default App;
+};
